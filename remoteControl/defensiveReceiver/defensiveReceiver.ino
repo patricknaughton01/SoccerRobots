@@ -13,7 +13,7 @@
 #include <Servo.h>
 
 #define PIPE 0xE7E7E7E7E2LL //frequency this receives on
-#define NUM_INPUTS 3 //number of devices we have to independently control on the robot
+#define NUM_INPUTS 4 //number of devices we have to independently control on the robot
 
 int msg[NUM_INPUTS];//place to store data from radio
 int motorPins[NUM_INPUTS];//hold pin numbers of motors (really escs)
@@ -23,6 +23,7 @@ Servo escs[NUM_INPUTS];
 RF24 radio(9, 10);
 
 void setup(){
+  Serial.begin(9600);
   ///////////////Hard code three motors///////////////
   motorPins[0] = 9;
   motorPins[1] = 10;
@@ -44,10 +45,14 @@ void setup(){
 
 void loop(){
   if(radio.available()){
-    radio.read(msg, sizeof(int)*NUM_INPUTS);
+    radio.read(msg, sizeof(msg));
   }
   for(int i = 0; i<NUM_INPUTS; i++){
-    escs[i].write(msg[i]);
+    Serial.print("msg[");
+    Serial.print(i);
+    Serial.print("] = ");
+    Serial.println(msg[i]);
+    //escs[i].write(msg[i]);
   }
 }
 

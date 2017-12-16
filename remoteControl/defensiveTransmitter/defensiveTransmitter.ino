@@ -13,29 +13,45 @@
 #include <SPI.h>
 
 #define PIPE 0xE7E7E7E7E2LL
-#define NUM_INPUTS 3
-#define PACKET_SIZE 6//data that nunchuck sends back
+#define NUM_INPUTS 4
+#define PACKET_SIZE 6 //data that nunchuck sends back
 #define ADDR 0x52
-#define NUN1 2//the pin that switches to this line
-#define NUN2 3//the pin that switches to this line
+#define NUN1 2 //the pin that switches to this line
+#define NUN2 3 //the pin that switches to this line
+#define NUN_MAX 127 //subject to change, tentative mins and maxes of what we want to analogWrite?
+#define NUN_MIN -128
 
+//////////////////////////////PROTOTYPES//////////////////////////////
 void init_both_nunchucks();
 void nunchuck_init();
 void nunchuck_send_request();
 int nunchuck_get_data();
 char nunchuck_decode_byte(char x);
+byte nunchuck_Z(uint8_t * nunchuckBuffer);
+byte nunchuck_C(uint8_t * nunchuckBuffer);
+int nunchuck_X(uint8_t * nunchuckBuffer);
+int nunchuck_Y(uint8_t * nunchuckBuffer);
 
-static uint8_t *nunchuckBuffer1 = (uint8_t*)malloc(sizeof(uint8_t)*PACKET_SIZE);
+// 1 = right controller
+// 2 = left controller
+static uint8_t *nunchuckBuffer1 = (uint8_t*)malloc(sizeof(uint8_t)*PACKET_SIZE); //make a buffer for each nunchuck
 static uint8_t *nunchuckBuffer2 = (uint8_t*)malloc(sizeof(uint8_t)*PACKET_SIZE);
 
+/*
+ * Holds the inputs to the other arduino
+ * msg[0] = right input
+ * msg[1] = left input
+ * msg[2] = shoot?
+ */
 int msg[NUM_INPUTS];
 
 RF24 radio(9, 10);
 
 void setup(){
+  Serial.begin(9600);
   radio.begin();
   radio.openWritingPipe(PIPE);
-  //nunchuck_init();
+  nunchuck_init();
   pinMode(NUN1, OUTPUT);//initialize both nunchuck channels
   pinMode(NUN2, OUTPUT);//as closed
   digitalWrite(NUN1, LOW);
@@ -43,14 +59,37 @@ void setup(){
 }
 
 void loop(){
-  //nunchuck_get_data();
-//  for(int i = 0; i<PACKET_SIZE; i++){
-//    Serial.print("nunchuckBuffer1[");
-//    Serial.print(i);
-//    Serial.print("] = ");
-//    Serial.println(nunchuckBuffer1[i]);
-//  }
+  nunchuck_get_data(nunchuckBuffer1);
+  /*// Test code to get all inputs
+  Serial.print("Z button = ");
+  Serial.println(nunchuck_Z(nunchuckBuffer1));
+  Serial.print("C button = ");
+  Serial.println(nunchuck_C(nunchuckBuffer1));
+  Serial.print("X = ");
+  Serial.println(nunchuck_X(nunchuckBuffer1));
+  Serial.print("Y = ");
+  Serial.println(nunchuck_Y(nunchuckBuffer1));
   Serial.println();
+  //*/
+  if(NUM_INPUTS>0){
+    Serial.println("writing y1");
+    msg[0] = nunchuck_Y(nunchuckBuffer1);
+  }
+  if(NUM_INPUTS>1){
+    Serial.println("writing y2");
+    msg[1] = nunchuck_Y(nunchuckBuffer2);
+  }
+  if(NUM_INPUTS>2){
+    Serial.println("writing z/c");
+    msg[2] = (nunchuck_Z(nunchuckBuffer1)
+    || nunchuck_C(nunchuckBuffer1)
+    || nunchuck_Z(nunchuckBuffer2)
+    || nunchuck_C(nunchuckBuffer2));
+  }
+  if(NUM_INPUTS>3){
+    msg[3] = 1;
+  }
+  radio.write(msg, sizeof(msg));
 }
 
 void init_both_nunchucks(){
@@ -109,5 +148,21 @@ int nunchuck_get_data(uint8_t * nunchuck_buffer){
 char nunchuck_decode_byte(char x){
   x = (x^0x17) + 0x17;
   return(x);
+}
+
+byte nunchuck_Z(uint8_t * nunchuckBuffer){
+  return (((~(nunchuckBuffer[5]))>>0) & 1);
+}
+
+byte nunchuck_C(uint8_t * nunchuckBuffer){
+  return (((~(nunchuckBuffer[5]))>>1) & 1);
+}
+
+int nunchuck_X(uint8_t * nunchuckBuffer){
+  return map(nunchuckBuffer[0], 32, 226, NUN_MIN, NUN_MAX);
+}
+
+int nunchuck_Y(uint8_t * nunchuckBuffer){
+  return map(nunchuckBuffer[1], 32, 226, NUN_MIN, NUN_MAX);
 }
 
