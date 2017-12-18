@@ -12,7 +12,7 @@
 #include <nRF24L01.h>
 #include <SPI.h>
 
-#define PIPE 0xE7E7E7E7E2LL
+const uint64_t PIPE = 0xE7E7E7E7E2LL;
 #define NUM_INPUTS 4
 #define PACKET_SIZE 6 //data that nunchuck sends back
 #define ADDR 0x52
@@ -59,7 +59,11 @@ void setup(){
 }
 
 void loop(){
+  long start = millis();
   nunchuck_get_data(nunchuckBuffer1);
+  Serial.print("time to get_data = ");
+  Serial.println(millis()-start);
+  Serial.println();
   /*// Test code to get all inputs
   Serial.print("Z button = ");
   Serial.println(nunchuck_Z(nunchuckBuffer1));
@@ -72,24 +76,50 @@ void loop(){
   Serial.println();
   //*/
   if(NUM_INPUTS>0){
-    Serial.println("writing y1");
+    //Serial.println("writing y1");
+    long sy1 = millis();
     msg[0] = nunchuck_Y(nunchuckBuffer1);
+    radio.write(msg, sizeof(msg));
+    Serial.print("time for y1 = ");
+    Serial.println(millis()-sy1);
   }
   if(NUM_INPUTS>1){
-    Serial.println("writing y2");
+    //Serial.println("writing y2");
+    long sy2 = millis();
     msg[1] = nunchuck_Y(nunchuckBuffer2);
+    radio.write(msg, sizeof(msg));
+    Serial.print("time for y2 = ");
+    Serial.println(millis()-sy2);
   }
   if(NUM_INPUTS>2){
-    Serial.println("writing z/c");
+    //Serial.println("writing z/c");
+    long szc = millis();
     msg[2] = (nunchuck_Z(nunchuckBuffer1)
-    || nunchuck_C(nunchuckBuffer1)
-    || nunchuck_Z(nunchuckBuffer2)
-    || nunchuck_C(nunchuckBuffer2));
+    || nunchuck_C(nunchuckBuffer1));
+    radio.write(msg, sizeof(msg));
+    Serial.print("time for zc = ");
+    Serial.println(millis()-szc);
   }
   if(NUM_INPUTS>3){
     msg[3] = 1;
+    radio.write(msg, sizeof(msg));
   }
-  radio.write(msg, sizeof(msg));
+//////////////////Testing what the msg is
+//  Serial.print("msg[0] = ");
+//  Serial.println(msg[0]);
+//  Serial.print("msg[1] = ");
+//  Serial.println(msg[1]);
+//  Serial.print("msg[2] = ");
+//  Serial.println(msg[2]);
+//  Serial.print("msg[3] = ");
+//  Serial.println(msg[3]);
+/////////////////Testing timing with write at end
+//  long startMsg = millis();
+//  radio.write(msg, sizeof(msg));
+//  Serial.println();
+//  Serial.print("time to write msg = ");
+//  Serial.println(millis()-start);
+//  Serial.println();
 }
 
 void init_both_nunchucks(){
@@ -130,13 +160,15 @@ void nunchuck_send_request(){
 int nunchuck_get_data(uint8_t * nunchuck_buffer){
   int cnt = 0;
   Wire.requestFrom(ADDR, PACKET_SIZE);//request data from nunchuck
-  while(Wire.available()){
+  //while(Wire.available()){
+  for(int i = 0; i<PACKET_SIZE; i++){
+    if(Wire.available()){
     *nunchuck_buffer = nunchuck_decode_byte(Wire.read());//put the next data in the buffer
     cnt++;//go to next pos in buffer
     nunchuck_buffer++;//increment nunchuck pointer
+    }
   }
   nunchuck_send_request();//request next data
-
   if(cnt>=5){
     return 1;//if we got at least 6 bytes, success
   }else{

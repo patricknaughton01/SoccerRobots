@@ -1,0 +1,9 @@
+A dipole antenna was used to increase the power of the module because
+the module alone could not boadcast over a large enough range (it 
+could only consistently communicate about 1 cm away)
+
+Since power of a signal increases with the square of antenna
+length, we get that the antenna needs to be ((5 m)/(1cm))^0.5
+times longer. The antenna native to the module is approximately
+3 cm long, giving a final antenna length of ~78 cm. I made
+each branch that long for testing purposes.

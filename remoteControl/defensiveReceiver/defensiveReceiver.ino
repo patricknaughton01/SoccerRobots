@@ -12,7 +12,7 @@
 #include <SPI.h>
 #include <Servo.h>
 
-#define PIPE 0xE7E7E7E7E2LL //frequency this receives on
+const uint64_t PIPE = 0xE7E7E7E7E2LL; //frequency this receives on
 #define NUM_INPUTS 4 //number of devices we have to independently control on the robot
 
 int msg[NUM_INPUTS];//place to store data from radio
@@ -45,14 +45,17 @@ void setup(){
 
 void loop(){
   if(radio.available()){
-    radio.read(msg, sizeof(msg));
+    radio.read(msg, sizeof(int)*NUM_INPUTS);
   }
-  for(int i = 0; i<NUM_INPUTS; i++){
-    Serial.print("msg[");
-    Serial.print(i);
-    Serial.print("] = ");
-    Serial.println(msg[i]);
+  for(int i = 0; i<NUM_INPUTS-1; i++){
+    Serial.print(msg[0]);
+    Serial.print(",");
+    Serial.print(msg[1]);
+    Serial.print(",");
+    Serial.print(msg[2]);
+    Serial.print("\n");
     //escs[i].write(msg[i]);
   }
+  delay(100);
 }
 
