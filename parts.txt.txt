@@ -1,0 +1,3 @@
+battery - 2 per robot https://www.horizonhobby.com/product/cars-and-trucks/batteries-15063--1/batteries-15134--1/speedpack-6v-5100mah-nimh-5c-flat-receiver-pack%3A-5t-dyn1443
+Max current of 25.5 amps, should be fine for two 11 amp max motors.
+6v
