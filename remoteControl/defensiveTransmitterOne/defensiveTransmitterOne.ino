@@ -41,27 +41,30 @@ int msg[NUM_INPUTS];
 RF24 radio(9, 10);
 
 void setup(){
-  Serial.begin(9600);
+  Serial.begin(250000);
   radio.begin();
   radio.openWritingPipe(PIPE);
+  //radio.setAutoAck(false);
+  //radio.setDataRate(RF24_2MBPS);
+  radio.stopListening();
   nunchuck_init();
 }
 
 void loop(){
-  long start = millis();
+  //long start = millis();
   nunchuck_get_data(nunchuckBuffer);
+  /*// Test code to get all inputs
   Serial.print("time to get_data = ");
   Serial.println(millis()-start);
   Serial.println();
-  /*// Test code to get all inputs
   Serial.print("Z button = ");
-  Serial.println(nunchuck_Z(nunchuckBuffer1));
+  Serial.println(nunchuck_Z(nunchuckBuffer));
   Serial.print("C button = ");
-  Serial.println(nunchuck_C(nunchuckBuffer1));
+  Serial.println(nunchuck_C(nunchuckBuffer));
   Serial.print("X = ");
-  Serial.println(nunchuck_X(nunchuckBuffer1));
+  Serial.println(nunchuck_X(nunchuckBuffer));
   Serial.print("Y = ");
-  Serial.println(nunchuck_Y(nunchuckBuffer1));
+  Serial.println(nunchuck_Y(nunchuckBuffer));
   Serial.println();
   //*/
   if(NUM_INPUTS>0){
@@ -69,16 +72,16 @@ void loop(){
     long sx = millis();
     msg[0] = nunchuck_X(nunchuckBuffer);
     radio.write(msg, sizeof(msg));
-    Serial.print("time for x = ");
-    Serial.println(millis()-sx);
+    //Serial.print("time for x = ");
+    //Serial.println(millis()-sx);
   }
   if(NUM_INPUTS>1){
     //Serial.println("writing y");
     long sy = millis();
     msg[1] = nunchuck_Y(nunchuckBuffer);
     radio.write(msg, sizeof(msg));
-    Serial.print("time for y = ");
-    Serial.println(millis()-sy);
+    //Serial.print("time for y = ");
+    //Serial.println(millis()-sy);
   }
   if(NUM_INPUTS>2){
     //Serial.println("writing z/c");
@@ -86,13 +89,17 @@ void loop(){
     msg[2] = (nunchuck_Z(nunchuckBuffer)
     || nunchuck_C(nunchuckBuffer));
     radio.write(msg, sizeof(msg));
-    Serial.print("time for zc = ");
-    Serial.println(millis()-szc);
+    //Serial.print("time for zc = ");
+    //Serial.println(millis()-szc);
   }
   if(NUM_INPUTS>3){
     msg[3] = 1;
     radio.write(msg, sizeof(msg));
   }
+//  long sr = millis();
+//  radio.write(msg, sizeof(msg));
+//  Serial.print("time for r = ");
+//  Serial.println(millis()-sr);
 //////////////////Testing what the msg is
 //  Serial.print("msg[0] = ");
 //  Serial.println(msg[0]);
@@ -166,4 +173,5 @@ int nunchuck_X(uint8_t * nunchuckBuffer){
 int nunchuck_Y(uint8_t * nunchuckBuffer){
   return map(nunchuckBuffer[1], 32, 226, NUN_MIN, NUN_MAX);
 }
+
 

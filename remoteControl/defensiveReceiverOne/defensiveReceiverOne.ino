@@ -23,7 +23,7 @@ Servo escs[NUM_INPUTS];
 RF24 radio(9, 10);
 
 void setup(){
-  Serial.begin(9600);
+  Serial.begin(250000);
   ///////////////Hard code three motors///////////////
   motorPins[0] = 3;
   motorPins[1] = 5;
@@ -40,9 +40,6 @@ void setup(){
   radio.begin();
   radio.openReadingPipe(1, PIPE);
   radio.startListening();
-  escs[1].write(90);
-  delay(5000);
-  
 }
 
 void loop(){
@@ -55,7 +52,9 @@ void loop(){
     Serial.print(msg[1]);
     Serial.print(",");
     Serial.print(msg[2]);
-    Serial.print("\n");
+    Serial.print(",");
+    Serial.print(msg[3]);
+    Serial.println();
     escs[i].write(msg[i]);
   }
   delay(100);
