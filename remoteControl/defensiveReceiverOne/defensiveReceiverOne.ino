@@ -55,7 +55,8 @@ void loop(){
     Serial.print(",");
     Serial.print(msg[3]);
     Serial.println();
-    escs[i].write(msg[i]);
+    // msg comes in as a microsecond value
+    escs[i].writeMicroseconds(msg[i]);
   }
   delay(100);
 }
