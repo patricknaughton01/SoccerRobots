@@ -23,18 +23,15 @@ Servo escs[NUM_INPUTS];
 RF24 radio(9, 10);
 
 void setup(){
-  Serial.begin(250000);
   ///////////////Hard code three motors///////////////
   motorPins[0] = 3;
   motorPins[1] = 5;
   motorPins[2] = 6;
   escs[0].attach(motorPins[0]);
   escs[1].attach(motorPins[1]);
-  escs[2].attach(motorPins[2]);
   ///////////////End hard code///////////////
   for(int i = 0; i<NUM_INPUTS; i++){
-    pinMode(motorPins[i], OUTPUT);
-    digitalWrite(motorPins[i], LOW);
+    escs[i].writeMicroseconds(1500);
   }
 
   radio.begin();
@@ -46,18 +43,10 @@ void loop(){
   if(radio.available()){
     radio.read(msg, sizeof(int)*NUM_INPUTS);
   }
-  for(int i = 0; i<NUM_INPUTS-1; i++){
-    Serial.print(msg[0]);
-    Serial.print(",");
-    Serial.print(msg[1]);
-    Serial.print(",");
-    Serial.print(msg[2]);
-    Serial.print(",");
-    Serial.print(msg[3]);
-    Serial.println();
+  for(int i = 0; i<NUM_INPUTS-2; i++){
     // msg comes in as a microsecond value
     escs[i].writeMicroseconds(msg[i]);
   }
-  delay(100);
+  delay(10);
 }
 

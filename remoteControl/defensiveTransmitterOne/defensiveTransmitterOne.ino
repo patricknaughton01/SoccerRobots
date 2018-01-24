@@ -13,7 +13,7 @@
 #include <SPI.h>
 
 const uint64_t PIPE = 0xE7E7E7E7E2LL;
-#define NUM_INPUTS 4
+#define NUM_INPUTS 3
 #define PACKET_SIZE 6 //data that nunchuck sends back
 #define ADDR 0x52
 #define NUN_MAX 2000 //subject to change, tentative mins and maxes of what we want to analogWrite?
@@ -32,90 +32,40 @@ static uint8_t *nunchuckBuffer = (uint8_t*)malloc(sizeof(uint8_t)*PACKET_SIZE); 
 
 /*
  * Holds the inputs to the other arduino
- * msg[0] = right input
- * msg[1] = left input
- * msg[2] = shoot?
+ * msg[0] = x input
+ * msg[1] = y input
+ * msg[2] = z pressed?
+ * msg[3] = c pressed?
  */
 int msg[NUM_INPUTS];
 
 RF24 radio(9, 10);
 
 void setup(){
-  Serial.begin(250000);
   radio.begin();
   radio.openWritingPipe(PIPE);
-  //radio.setAutoAck(false);
-  //radio.setDataRate(RF24_2MBPS);
   radio.stopListening();
   nunchuck_init();
 }
 
 void loop(){
-  //long start = millis();
   nunchuck_get_data(nunchuckBuffer);
-  /*// Test code to get all inputs
-  Serial.print("time to get_data = ");
-  Serial.println(millis()-start);
-  Serial.println();
-  Serial.print("Z button = ");
-  Serial.println(nunchuck_Z(nunchuckBuffer));
-  Serial.print("C button = ");
-  Serial.println(nunchuck_C(nunchuckBuffer));
-  Serial.print("X = ");
-  Serial.println(nunchuck_X(nunchuckBuffer));
-  Serial.print("Y = ");
-  Serial.println(nunchuck_Y(nunchuckBuffer));
-  Serial.println();
-  //*/
   if(NUM_INPUTS>0){
-    //Serial.println("writing x");
-    long sx = millis();
     msg[0] = nunchuck_X(nunchuckBuffer);
     radio.write(msg, sizeof(msg));
-    //Serial.print("time for x = ");
-    //Serial.println(millis()-sx);
   }
   if(NUM_INPUTS>1){
-    //Serial.println("writing y");
-    long sy = millis();
     msg[1] = nunchuck_Y(nunchuckBuffer);
     radio.write(msg, sizeof(msg));
-    //Serial.print("time for y = ");
-    //Serial.println(millis()-sy);
   }
   if(NUM_INPUTS>2){
-    //Serial.println("writing z/c");
-    long szc = millis();
-    msg[2] = (nunchuck_Z(nunchuckBuffer)
-    || nunchuck_C(nunchuckBuffer));
+    msg[2] = nunchuck_Z(nunchuckBuffer);
     radio.write(msg, sizeof(msg));
-    //Serial.print("time for zc = ");
-    //Serial.println(millis()-szc);
   }
   if(NUM_INPUTS>3){
-    msg[3] = 1;
+    msg[3] = nunchuck_C(nunchuckBuffer);
     radio.write(msg, sizeof(msg));
   }
-//  long sr = millis();
-//  radio.write(msg, sizeof(msg));
-//  Serial.print("time for r = ");
-//  Serial.println(millis()-sr);
-//////////////////Testing what the msg is
-//  Serial.print("msg[0] = ");
-//  Serial.println(msg[0]);
-//  Serial.print("msg[1] = ");
-//  Serial.println(msg[1]);
-//  Serial.print("msg[2] = ");
-//  Serial.println(msg[2]);
-//  Serial.print("msg[3] = ");
-//  Serial.println(msg[3]);
-/////////////////Testing timing with write at end
-//  long startMsg = millis();
-//  radio.write(msg, sizeof(msg));
-//  Serial.println();
-//  Serial.print("time to write msg = ");
-//  Serial.println(millis()-start);
-//  Serial.println();
 }
 
 void nunchuck_init(){
