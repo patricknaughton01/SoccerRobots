@@ -13,7 +13,7 @@
 #include <SPI.h>
 
 const uint64_t PIPE = 0xE7E7E7E7E2LL;
-#define NUM_INPUTS 3
+#define NUM_INPUTS 4
 #define PACKET_SIZE 6 //data that nunchuck sends back
 #define ADDR 0x52
 #define NUN_MAX 2000 //subject to change, tentative mins and maxes of what we want to analogWrite?
