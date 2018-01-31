@@ -1,0 +1,14 @@
+This is a custom Arduino Uno shield to easily interface with the RF24 module and nunchuck.
+
+The female headers are for these two modules.
+
+RF24: This goes into the group of two female headers. Pin 1 on the module
+has a box around it. This box goes into the header with tape on its corner.
+
+Nunchuck: This goes into the single header. Tape on the end of the header
+marks where one of the end pins should go. There's only really one way
+to put the nunchuck module in, given that an end pin should go into that hole,
+because if you put it in backwards, the module sticks over the shield and header,
+making it impossible to plug the nunchuck in. If you put it in correctly, the 
+module sticks off the edge of the shield, allowing you to easily plug in the 
+nunchuck.
