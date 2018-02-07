@@ -27,7 +27,7 @@ void setup(){
   motorPins[0] = 3;
   motorPins[1] = 5;
   motorPins[2] = 6;
-  escs[0].attach(motorPins[0]);
+  escs[0].attach(motorPins[2]);
   escs[1].attach(motorPins[1]);
   ///////////////End hard code///////////////
   for(int i = 0; i<NUM_INPUTS; i++){
@@ -43,10 +43,11 @@ void loop(){
   if(radio.available()){
     radio.read(msg, sizeof(int)*NUM_INPUTS);
   }
-  for(int i = 0; i<NUM_INPUTS-2; i++){
-    // msg comes in as a microsecond value
-    escs[i].writeMicroseconds(msg[i]);
-  }
+  escs[0].writeMicroseconds(msg[0]);
+//  for(int i = 0; i<NUM_INPUTS-2; i++){
+//    // msg comes in as a microsecond value
+//    escs[i].writeMicroseconds(msg[i]);
+//  }
   delay(10);
 }
 
