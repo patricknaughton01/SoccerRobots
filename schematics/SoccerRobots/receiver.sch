@@ -4379,25 +4379,19 @@ Source: AVX .. aphvc.pdf</description>
 </net>
 <net name="5V" class="0">
 <segment>
-<pinref part="ESC1" gate="G$1" pin="2"/>
-<wire x1="101.6" y1="66.04" x2="99.06" y2="66.04" width="0.1524" layer="91"/>
-<wire x1="99.06" y1="66.04" x2="99.06" y2="50.8" width="0.1524" layer="91"/>
-<pinref part="ESC3" gate="G$1" pin="2"/>
-<wire x1="99.06" y1="50.8" x2="99.06" y2="35.56" width="0.1524" layer="91"/>
-<wire x1="99.06" y1="35.56" x2="101.6" y2="35.56" width="0.1524" layer="91"/>
-<pinref part="ESC2" gate="G$1" pin="2"/>
-<wire x1="101.6" y1="50.8" x2="99.06" y2="50.8" width="0.1524" layer="91"/>
-<junction x="99.06" y="50.8"/>
-<pinref part="5V" gate="VCC" pin="VCC"/>
-<wire x1="99.06" y1="73.66" x2="99.06" y2="66.04" width="0.1524" layer="91"/>
-<junction x="99.06" y="66.04"/>
-<label x="99.06" y="73.66" size="1.778" layer="95" xref="yes"/>
-</segment>
-<segment>
 <pinref part="PCB1" gate="G$1" pin="5V"/>
 <pinref part="5V1" gate="VCC" pin="VCC"/>
 <wire x1="27.94" y1="53.34" x2="0" y2="53.34" width="0.1524" layer="91"/>
 <label x="0" y="53.34" size="1.778" layer="95" rot="R270" xref="yes"/>
+</segment>
+</net>
+<net name="VCC" class="0">
+<segment>
+<pinref part="ESC1" gate="G$1" pin="2"/>
+<wire x1="101.6" y1="66.04" x2="99.06" y2="66.04" width="0.1524" layer="91"/>
+<pinref part="5V" gate="VCC" pin="VCC"/>
+<wire x1="99.06" y1="73.66" x2="99.06" y2="66.04" width="0.1524" layer="91"/>
+<label x="99.06" y="73.66" size="1.778" layer="95" xref="yes"/>
 </segment>
 </net>
 </nets>
