@@ -13,7 +13,7 @@
 #include <Servo.h>
 
 const uint64_t PIPE = 0xE7E7E7E7E2LL; //frequency this receives on
-#define NUM_INPUTS 4 //number of devices we have to independently control on the robot
+#define NUM_INPUTS 5 //number of devices we have to independently control on the robot plus a validation signal
 
 int msg[NUM_INPUTS];//place to store data from radio
 int motorPins[NUM_INPUTS];//hold pin numbers of motors (really escs)
@@ -23,16 +23,18 @@ Servo escs[NUM_INPUTS];
 RF24 radio(9, 10);
 
 void setup(){
+  Serial.begin(9600);
   ///////////////Hard code three motors///////////////
   motorPins[0] = 3;
   motorPins[1] = 5;
   motorPins[2] = 6;
-  escs[0].attach(motorPins[2]);
+  escs[0].attach(motorPins[0]);
   escs[1].attach(motorPins[1]);
-  ///////////////End hard code///////////////
-  for(int i = 0; i<NUM_INPUTS; i++){
+  escs[2].attach(motorPins[2]);
+  for(int i = 0; i<3; i++){
     escs[i].writeMicroseconds(1500);
   }
+  ///////////////End hard code///////////////
 
   radio.begin();
   radio.openReadingPipe(1, PIPE);
@@ -43,11 +45,15 @@ void loop(){
   if(radio.available()){
     radio.read(msg, sizeof(int)*NUM_INPUTS);
   }
-  escs[0].writeMicroseconds(msg[0]);
-//  for(int i = 0; i<NUM_INPUTS-2; i++){
-//    // msg comes in as a microsecond value
-//    escs[i].writeMicroseconds(msg[i]);
-//  }
+  if(msg[4]!=0){
+    escs[0].writeMicroseconds(1000);         // shooter
+    escs[1].writeMicroseconds(1500 + msg[1] - msg[0]);             // right motor
+    escs[2].writeMicroseconds(3000 - (msg[1] + msg[0] - 1500));    // left motor
+  }else{
+    escs[0].writeMicroseconds(1000);
+    escs[1].writeMicroseconds(1500);
+    escs[2].writeMicroseconds(1500);
+  }
   delay(10);
 }
 
