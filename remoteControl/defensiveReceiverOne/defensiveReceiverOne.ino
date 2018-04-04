@@ -35,7 +35,11 @@ void setup(){
     escs[i].writeMicroseconds(1500);
   }
   ///////////////End hard code///////////////
-
+  escs[0].writeMicroseconds(2000);
+  delay(2000);
+  escs[0].writeMicroseconds(1000);
+  delay(3000);
+  escs[0].writeMicroseconds(1500);
   radio.begin();
   radio.openReadingPipe(1, PIPE);
   radio.startListening();
@@ -46,11 +50,11 @@ void loop(){
     radio.read(msg, sizeof(int)*NUM_INPUTS);
   }
   if(msg[4]!=0){
-    escs[0].writeMicroseconds(1000);         // shooter
+    escs[0].writeMicroseconds(msg[2]);         // shooter
     escs[1].writeMicroseconds(1500 + msg[1] - msg[0]);             // right motor
     escs[2].writeMicroseconds(3000 - (msg[1] + msg[0] - 1500));    // left motor
   }else{
-    escs[0].writeMicroseconds(1000);
+    escs[0].writeMicroseconds(1500);
     escs[1].writeMicroseconds(1500);
     escs[2].writeMicroseconds(1500);
   }
