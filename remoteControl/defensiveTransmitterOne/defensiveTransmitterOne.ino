@@ -51,21 +51,22 @@ void setup(){
 
 void loop(){
   nunchuck_get_data(nunchuckBuffer);
+  msg[2] = 1500;
   if(NUM_INPUTS>0){
     msg[0] = nunchuck_X(nunchuckBuffer);
-    radio.write(msg, sizeof(msg));
+    //radio.write(msg, sizeof(msg));
   }
   if(NUM_INPUTS>1){
     msg[1] = nunchuck_Y(nunchuckBuffer);
-    radio.write(msg, sizeof(msg));
+    //radio.write(msg, sizeof(msg));
   }
   if(NUM_INPUTS>2){
-    msg[2] = nunchuck_Z(nunchuckBuffer);
-    radio.write(msg, sizeof(msg));
+    msg[2] -= nunchuck_Z(nunchuckBuffer)*500;
+    //radio.write(msg, sizeof(msg));
   }
   if(NUM_INPUTS>3){
-    msg[3] = nunchuck_C(nunchuckBuffer);
-    radio.write(msg, sizeof(msg));
+    msg[2] += nunchuck_C(nunchuckBuffer)*500;
+    //radio.write(msg, sizeof(msg));
   }
   msg[4] = 1;
   radio.write(msg, sizeof(msg));
