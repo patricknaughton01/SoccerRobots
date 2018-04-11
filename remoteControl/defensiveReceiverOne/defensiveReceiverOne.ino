@@ -43,16 +43,29 @@ void setup(){
   radio.begin();
   radio.openReadingPipe(1, PIPE);
   radio.startListening();
+  Serial.begin(9600);
 }
 
 void loop(){
   if(radio.available()){
     radio.read(msg, sizeof(int)*NUM_INPUTS);
   }
+//  else{
+//    msg[0] = 1500;
+//    msg[1] = 1500;
+//    msg[2] = 1500;
+//    msg[3] = 1500;
+//    msg[4] = 0;
+//  }
+  /*for(int i = 0; i<NUM_INPUTS; i++){
+    Serial.print(msg[i]);
+    Serial.print(", ");
+  }*/
+  Serial.println();
   if(msg[4]!=0){
     escs[0].writeMicroseconds(msg[2]);         // shooter
-    escs[1].writeMicroseconds(1500 + msg[1] - msg[0]);             // right motor
-    escs[2].writeMicroseconds(3000 - (msg[1] + msg[0] - 1500));    // left motor
+    escs[2].writeMicroseconds(1500 + msg[1] - msg[0]);             // right motor
+    escs[1].writeMicroseconds(3000 - (msg[1] + msg[0] - 1500));    // left motor
   }else{
     escs[0].writeMicroseconds(1500);
     escs[1].writeMicroseconds(1500);
