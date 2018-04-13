@@ -7,8 +7,8 @@
  * Date: 1/18/2017
  */
 
-#include <RF24.h>
-#include <nRF24L01.h>
+#include "RF24.h"
+#include "nRF24L01.h"
 #include <SPI.h>
 #include <Servo.h>
 
@@ -35,15 +35,9 @@ void setup(){
     escs[i].writeMicroseconds(1500);
   }
   ///////////////End hard code///////////////
-  escs[0].writeMicroseconds(2000);
-  delay(2000);
-  escs[0].writeMicroseconds(1000);
-  delay(3000);
-  escs[0].writeMicroseconds(1500);
   radio.begin();
   radio.openReadingPipe(1, PIPE);
   radio.startListening();
-  Serial.begin(9600);
 }
 
 void loop(){
@@ -61,12 +55,11 @@ void loop(){
     Serial.print(msg[i]);
     Serial.print(", ");
   }*/
-  Serial.println();
   if(msg[4]!=0){
     escs[0].writeMicroseconds(msg[2]);         // shooter
-    int rightMotorRawVal = 1500 + msg[1] - msg[0];
+    int rightMotorRawVal = 1500 + msg[1] - msg[0];  // right motor
     int rightMotor = map(rightMotorRawVal, 1000, 2000, 1000,  2000);
-    int leftMotorRawVal = rightMotorRawVal; //3000 - (msg[1] + msg[0] - 1500);
+    int leftMotorRawVal = msg[0] + msg[1] - 1500;   // left motor
     int leftMotor = map(leftMotorRawVal, 1000, 2000, 1000, 2000);
     escs[1].writeMicroseconds(rightMotor);    // right motor
     escs[2].writeMicroseconds(leftMotor);     // left motor
