@@ -64,8 +64,12 @@ void loop(){
   Serial.println();
   if(msg[4]!=0){
     escs[0].writeMicroseconds(msg[2]);         // shooter
-    escs[2].writeMicroseconds(1500 + msg[1] - msg[0]);             // right motor
-    escs[1].writeMicroseconds(3000 - (msg[1] + msg[0] - 1500));    // left motor
+    int rightMotorRawVal = 1500 + msg[1] - msg[0];
+    int rightMotor = map(rightMotorRawVal, 1000, 2000, 1000,  2000);
+    int leftMotorRawVal = rightMotorRawVal; //3000 - (msg[1] + msg[0] - 1500);
+    int leftMotor = map(leftMotorRawVal, 1000, 2000, 1000, 2000);
+    escs[1].writeMicroseconds(rightMotor);    // right motor
+    escs[2].writeMicroseconds(leftMotor);     // left motor
   }else{
     escs[0].writeMicroseconds(1500);
     escs[1].writeMicroseconds(1500);
